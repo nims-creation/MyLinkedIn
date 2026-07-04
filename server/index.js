@@ -14,7 +14,7 @@ const io = new Server(server, {
   cors: {
     origin: [
       "http://localhost:3000",
-      "https://mylinkedin-platform.vercel.app",
+      "https://my-linked-in-eight.vercel.app",
       /\.vercel\.app$/,
     ],
     methods: ["GET", "POST"],
@@ -29,8 +29,8 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://mylinkedin-platform.vercel.app", // Add your Vercel URL here later
-      /\.vercel\.app$/, // Allow all Vercel preview deployments
+      "https://my-linked-in-eight.vercel.app",
+      /\.vercel\.app$/,
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
