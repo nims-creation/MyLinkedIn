@@ -5,6 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useMessaging } from "@/context/MessagingContext";
 import { Bell, UserPlus, CheckCircle, MessageSquare } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { getInitials } from "@/lib/utils";
 
 export default function NotificationsPage() {
@@ -19,6 +20,7 @@ export default function NotificationsPage() {
       }, 2000);
       return () => clearTimeout(timer);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, notifications]);
 
   if (!user) return null;
@@ -57,7 +59,7 @@ export default function NotificationsPage() {
               >
                 <Link href={notif.sender ? `/profile/${notif.sender}` : "#"} className="flex-shrink-0">
                   {notif.senderDetails?.profilePicture ? (
-                    <img src={notif.senderDetails.profilePicture} alt="Sender" className="w-12 h-12 rounded-full object-cover border border-gray-200" />
+                    <Image src={notif.senderDetails.profilePicture} alt="Sender" width={48} height={48} className="rounded-full object-cover border border-gray-200" />
                   ) : (
                     <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold">
                       {getInitials(notif.senderDetails?.name || "System")}

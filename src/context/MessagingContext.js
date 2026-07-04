@@ -58,6 +58,7 @@ export const MessagingProvider = ({ children }) => {
     } else {
       if (socket) socket.close();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const openChatWith = async (targetUser) => {

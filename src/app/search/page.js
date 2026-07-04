@@ -7,6 +7,7 @@ import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { getInitials } from "@/lib/utils";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   Search,
@@ -271,10 +272,12 @@ function SearchPageContent() {
                           <Link href={`/profile/${user.firebaseUid}`}>
                             <div className="flex items-center gap-4 group cursor-pointer">
                               {user.profilePicture ? (
-                                <img
+                                <Image
                                   src={user.profilePicture}
                                   alt={user.name}
-                                  className="w-16 h-16 rounded-full object-cover ring-2 ring-gray-200 group-hover:ring-blue-300 transition-all duration-200"
+                                  width={64}
+                                  height={64}
+                                  className="rounded-full object-cover ring-2 ring-gray-200 group-hover:ring-blue-300 transition-all duration-200"
                                 />
                               ) : (
                                 <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold ring-2 ring-gray-200 group-hover:ring-blue-300 transition-all duration-200">
@@ -339,10 +342,12 @@ function SearchPageContent() {
                             <div className="group cursor-pointer">
                               <div className="flex items-start gap-4 mb-4">
                                 {post.authorProfilePicture ? (
-                                  <img
+                                  <Image
                                     src={post.authorProfilePicture}
                                     alt={post.authorName}
-                                    className="w-12 h-12 rounded-full object-cover ring-2 ring-gray-200 group-hover:ring-green-300 transition-all duration-200"
+                                    width={48}
+                                    height={48}
+                                    className="rounded-full object-cover ring-2 ring-gray-200 group-hover:ring-green-300 transition-all duration-200"
                                   />
                                 ) : (
                                   <div className="w-12 h-12 bg-gradient-to-r from-green-600 to-teal-600 rounded-full flex items-center justify-center text-white font-semibold ring-2 ring-gray-200 group-hover:ring-green-300 transition-all duration-200">

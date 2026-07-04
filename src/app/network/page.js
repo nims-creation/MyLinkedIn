@@ -15,6 +15,7 @@ export default function NetworkPage() {
     if (user) {
       fetchNetwork();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const fetchNetwork = async () => {
@@ -87,7 +88,7 @@ export default function NetworkPage() {
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <h2 className="text-xl font-semibold mb-4">Connections ({network.connections.length})</h2>
         {network.connections.length === 0 ? (
-          <p className="text-gray-500">You don't have any connections yet.</p>
+          <p className="text-gray-500">You don&apos;t have any connections yet.</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {network.connections.map((conn) => (
