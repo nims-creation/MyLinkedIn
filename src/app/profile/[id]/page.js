@@ -8,6 +8,7 @@ import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { Textarea } from "@/components/Textarea";
 import { ProfileLoadingScreen } from "@/components/LoadingScreen";
+import { useMessaging } from "@/context/MessagingContext";
 import {
   Edit3,
   Save,
@@ -24,6 +25,7 @@ import Image from "next/image";
 export default function ProfilePage() {
   const params = useParams();
   const { user } = useAuth();
+  const { openChatWith } = useMessaging();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -375,7 +377,11 @@ export default function ProfilePage() {
                             Connect
                           </Button>
                         )}
-                        <Button variant="outline" className="border-gray-300">
+                        <Button 
+                          variant="outline" 
+                          className="border-gray-300"
+                          onClick={() => openChatWith(profile)}
+                        >
                           Message
                         </Button>
                       </>

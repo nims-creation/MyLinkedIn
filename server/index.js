@@ -7,12 +7,26 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const http = require("http");
+const { Server } = require("socket.io");
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: [
+      "http://localhost:3000",
+      "https://mylinkedin-platform.vercel.app",
+      /\.vercel\.app$/,
+    ],
+    methods: ["GET", "POST"],
+  },
+});
+
 // Enhanced CORS configuration for production
 app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://mini-linkedin-platform.vercel.app", // Add your Vercel URL here later
+      "https://mylinkedin-platform.vercel.app", // Add your Vercel URL here later
       /\.vercel\.app$/, // Allow all Vercel preview deployments
     ],
     credentials: true,
@@ -108,6 +122,11 @@ try {
   const uploadRouter = require("./routes/upload");
   console.log("Upload router loaded successfully");
 
+  // Load messages router
+  console.log("Loading messages router...");
+  const messagesRouter = require("./routes/messages");
+  console.log("Messages router loaded successfully");
+
   // Register routes
   console.log("Registering routes...");
   app.use("/api/users", usersRouter);
@@ -118,6 +137,9 @@ try {
 
   app.use("/api/upload", uploadRouter);
   console.log("Upload routes registered at /api/upload");
+
+  app.use("/api/messages", messagesRouter);
+  console.log("Messages routes registered at /api/messages");
 
   console.log("All routes loaded and registered successfully");
 
@@ -189,11 +211,40 @@ process.on("SIGINT", async () => {
 }
 });
 
+// Socket.io integration
+io.on("connection", (socket) => {
+  console.log("New client connected:", socket.id);
+
+  socket.on("join", (userId) => {
+    socket.join(userId);
+    console.log(`User ${userId} joined their room`);
+  });
+
+  socket.on("sendMessage", async (data) => {
+    try {
+      const Message = require("./models/Message");
+      const { sender, receiver, content } = data;
+      
+      const newMessage = new Message({ sender, receiver, content });
+      await newMessage.save();
+
+      io.to(receiver).emit("receiveMessage", newMessage);
+      socket.emit("messageSent", newMessage);
+    } catch (error) {
+      console.error("Socket send message error:", error);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected:", socket.id);
+  });
+});
+
 // Connect to database
 connectDB();
 
 // Start server
-const server = app.listen(PORT, "0.0.0.0", () => {
+server.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
   console.log(`Health check available at: http://localhost:${PORT}/health`);

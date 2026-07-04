@@ -2,9 +2,11 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { MessagingProvider } from "@/context/MessagingContext";
 import { Header } from "@/components/Header";
 import { SmoothScrollProvider } from "@/components/SmoothScrollProvider";
 import { LoadingScreen } from "@/components/LoadingScreen"; // Fixed import
+import { ChatBox } from "@/components/ChatBox";
 import { Suspense } from "react";
 
 const geistSans = Geist({
@@ -77,8 +79,11 @@ export default function RootLayout({ children }) {
           <Suspense fallback={<LoadingScreen />}>
             <SmoothScrollProvider>
               <AuthProvider>
-                <Header />
-                <main className="min-h-screen">{children}</main>
+                <MessagingProvider>
+                  <Header />
+                  <main className="min-h-screen">{children}</main>
+                  <ChatBox />
+                </MessagingProvider>
               </AuthProvider>
             </SmoothScrollProvider>
           </Suspense>
