@@ -127,6 +127,11 @@ try {
   const messagesRouter = require("./routes/messages");
   console.log("Messages router loaded successfully");
 
+  // Load jobs router
+  console.log("Loading jobs router...");
+  const jobsRouter = require("./routes/jobs");
+  console.log("Jobs router loaded successfully");
+
   // Register routes
   console.log("Registering routes...");
   app.use("/api/users", usersRouter);
@@ -140,6 +145,9 @@ try {
 
   app.use("/api/messages", messagesRouter);
   console.log("Messages routes registered at /api/messages");
+
+  app.use("/api/jobs", jobsRouter);
+  console.log("Jobs routes registered at /api/jobs");
 
   console.log("All routes loaded and registered successfully");
 

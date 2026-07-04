@@ -312,4 +312,20 @@ router.post("/:firebaseUid/remove/:targetUid", async (req, res) => {
   }
 });
 
+// AI Bio Enhance Mock
+router.post("/:firebaseUid/enhance-bio", async (req, res) => {
+  try {
+    const { currentBio } = req.body;
+    
+    // Simulate AI processing delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    const enhancedBio = `🚀 Passionate Professional | Innovator & Problem Solver\n\n${currentBio ? currentBio + "\n\n" : ""}Driven by a relentless curiosity and a passion for creating impactful solutions. I specialize in turning complex challenges into streamlined, user-centric experiences. Always eager to collaborate, learn, and push the boundaries of what's possible in the tech ecosystem.`;
+    
+    res.json({ enhancedBio });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 module.exports = router;

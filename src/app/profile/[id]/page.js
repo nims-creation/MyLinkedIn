@@ -19,6 +19,7 @@ import {
   User,
   Camera,
   Upload,
+  Sparkles,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -29,6 +30,7 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
+  const [enhancing, setEnhancing] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState("none");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [editData, setEditData] = useState({
@@ -174,6 +176,25 @@ export default function ProfilePage() {
       alert("Failed to upload image. Please try again.");
     } finally {
       setUploadingImage(false);
+    }
+  };
+
+  const handleEnhanceBio = async () => {
+    setEnhancing(true);
+    try {
+      const response = await fetch(`/api/users/${user.uid}/enhance-bio`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentBio: editData.bio }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setEditData(prev => ({ ...prev, bio: data.enhancedBio }));
+      }
+    } catch (error) {
+      console.error("Error enhancing bio:", error);
+    } finally {
+      setEnhancing(false);
     }
   };
 
@@ -398,6 +419,17 @@ export default function ProfilePage() {
           <div className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold text-gray-900">About</h2>
+              {editing && (
+                <Button 
+                  onClick={handleEnhanceBio} 
+                  disabled={enhancing}
+                  className="bg-purple-100 text-purple-700 hover:bg-purple-200 border border-purple-300 shadow-sm"
+                  size="sm"
+                >
+                  <Sparkles className="w-4 h-4 mr-2 text-purple-600" />
+                  {enhancing ? "Enhancing..." : "✨ Enhance with AI"}
+                </Button>
+              )}
             </div>
             {editing ? (
               <Textarea
