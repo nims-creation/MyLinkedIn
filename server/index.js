@@ -21,6 +21,9 @@ const io = new Server(server, {
   },
 });
 
+// Make io accessible to our router
+app.set("io", io);
+
 // Enhanced CORS configuration for production
 app.use(
   cors({
@@ -132,6 +135,11 @@ try {
   const jobsRouter = require("./routes/jobs");
   console.log("Jobs router loaded successfully");
 
+  // Load notifications router
+  console.log("Loading notifications router...");
+  const notificationsRouter = require("./routes/notifications");
+  console.log("Notifications router loaded successfully");
+
   // Register routes
   console.log("Registering routes...");
   app.use("/api/users", usersRouter);
@@ -148,6 +156,9 @@ try {
 
   app.use("/api/jobs", jobsRouter);
   console.log("Jobs routes registered at /api/jobs");
+
+  app.use("/api/notifications", notificationsRouter);
+  console.log("Notifications routes registered at /api/notifications");
 
   console.log("All routes loaded and registered successfully");
 

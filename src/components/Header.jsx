@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { useMessaging } from "@/context/MessagingContext";
 import { useTheme } from "next-themes";
 import { Button } from "./Button";
 import { Input } from "./Input";
@@ -36,8 +37,11 @@ export function Header() {
   const [searchLoading, setSearchLoading] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const [notificationCount, setNotificationCount] = useState(3);
-  const [messageCount, setMessageCount] = useState(2);
+  
+  // Real dynamic states
+  const { unreadNotificationCount } = useMessaging();
+  const [messageCount, setMessageCount] = useState(0); // Optional: add unread messages later
+  
   const { theme, setTheme } = useTheme();
   const dropdownRef = useRef(null);
   const searchRef = useRef(null); // Add search ref
@@ -197,8 +201,8 @@ export function Header() {
       icon: Bell,
       label: "Notifications",
       href: "/notifications",
-      count: notificationCount,
-      hasBlinking: true,
+      count: unreadNotificationCount,
+      hasBlinking: unreadNotificationCount > 0,
     },
   ];
 

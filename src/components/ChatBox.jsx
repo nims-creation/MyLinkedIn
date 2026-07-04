@@ -3,8 +3,19 @@
 import { useState, useRef, useEffect } from "react";
 import { useMessaging } from "@/context/MessagingContext";
 import { useAuth } from "@/context/AuthContext";
-import { X, Send, User } from "lucide-react";
+import { X, Send, User, Sparkles } from "lucide-react";
 import Image from "next/image";
+import { getInitials } from "@/lib/utils";
+
+const SMART_REPLIES = [
+  "Sounds great!",
+  "Thank you!",
+  "I agree.",
+  "When are you free?",
+  "Let's connect soon.",
+  "Could you tell me more?",
+  "Awesome, thanks!",
+];
 
 export function ChatBox() {
   const { activeChatUser, isChatOpen, closeChat, messages, sendMessage } = useMessaging();
@@ -32,6 +43,14 @@ export function ChatBox() {
     }
   };
 
+  const handleSmartReply = (reply) => {
+    sendMessage(reply);
+  };
+
+  // Determine if we should show smart replies (last message is from the other person)
+  const showSmartReplies = messages.length > 0 && messages[messages.length - 1].sender !== user.uid;
+  const suggestedReplies = SMART_REPLIES.sort(() => 0.5 - Math.random()).slice(0, 3);
+
   return (
     <div className="fixed bottom-4 right-4 w-80 bg-white dark:bg-gray-800 rounded-t-xl rounded-bl-xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden z-50">
       {/* Header */}
@@ -41,7 +60,7 @@ export function ChatBox() {
             <Image src={activeChatUser.profilePicture} alt={activeChatUser.name} width={32} height={32} className="rounded-full" />
           ) : (
             <div className="w-8 h-8 bg-blue-400 rounded-full flex items-center justify-center font-bold">
-              {activeChatUser.name.charAt(0)}
+              {getInitials(activeChatUser.name)}
             </div>
           )}
           <span className="font-semibold text-sm truncate">{activeChatUser.name}</span>
@@ -65,6 +84,22 @@ export function ChatBox() {
         })}
         <div ref={messagesEndRef} />
       </div>
+
+      {/* Smart Replies */}
+      {showSmartReplies && (
+        <div className="px-3 py-2 bg-gray-50 dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 flex gap-2 overflow-x-auto no-scrollbar">
+          <Sparkles className="w-4 h-4 text-purple-500 flex-shrink-0 mt-0.5" />
+          {suggestedReplies.map((reply, i) => (
+            <button
+              key={i}
+              onClick={() => handleSmartReply(reply)}
+              className="whitespace-nowrap px-3 py-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-full text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-purple-900/30 hover:border-purple-200 dark:hover:border-purple-800 hover:text-purple-700 dark:hover:text-purple-300 transition-colors"
+            >
+              {reply}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Input */}
       <form onSubmit={handleSend} className="p-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex items-center gap-2">

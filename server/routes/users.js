@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
+const Notification = require("../models/Notification");
 
 // Test route to verify router is working
 router.get("/test", (req, res) => {
@@ -224,6 +225,22 @@ router.post("/:firebaseUid/connect/:targetUid", async (req, res) => {
     targetUser.receivedRequests.push(firebaseUid);
 
     await Promise.all([user.save(), targetUser.save()]);
+
+    // Create Notification
+    const notif = new Notification({
+      recipient: targetUid,
+      sender: firebaseUid,
+      type: "connection_request",
+      content: `${user.name || "Someone"} sent you a connection request.`
+    });
+    await notif.save();
+
+    // Emit real-time socket event
+    const io = req.app.get("io");
+    if (io) {
+      io.to(targetUid).emit("newNotification", notif);
+    }
+
     res.json({ message: "Connection request sent successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -258,6 +275,22 @@ router.post("/:firebaseUid/accept/:targetUid", async (req, res) => {
     if (!targetUser.connections.includes(firebaseUid)) targetUser.connections.push(firebaseUid);
 
     await Promise.all([user.save(), targetUser.save()]);
+
+    // Create Notification
+    const notif = new Notification({
+      recipient: targetUid,
+      sender: firebaseUid,
+      type: "connection_accepted",
+      content: `${user.name || "Someone"} accepted your connection request.`
+    });
+    await notif.save();
+
+    // Emit real-time socket event
+    const io = req.app.get("io");
+    if (io) {
+      io.to(targetUid).emit("newNotification", notif);
+    }
+
     res.json({ message: "Connection request accepted" });
   } catch (error) {
     res.status(500).json({ message: error.message });

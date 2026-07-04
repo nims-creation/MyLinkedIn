@@ -14,6 +14,21 @@ export const MessagingProvider = ({ children }) => {
   const [messages, setMessages] = useState([]); // Currently active chat messages
   const [activeChatUser, setActiveChatUser] = useState(null); // The user being chatted with
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
+
+  // Fetch initial notifications
+  useEffect(() => {
+    if (user) {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/notifications/${user.uid}`)
+        .then(res => res.json())
+        .then(data => {
+          setNotifications(data);
+          setUnreadNotificationCount(data.filter(n => !n.isRead).length);
+        })
+        .catch(err => console.error("Error fetching notifications:", err));
+    }
+  }, [user]);
 
   useEffect(() => {
     if (user) {
@@ -26,11 +41,15 @@ export const MessagingProvider = ({ children }) => {
 
       newSocket.on("receiveMessage", (msg) => {
         setMessages((prev) => [...prev, msg]);
-        // Here we could also trigger a notification or unread count
       });
 
       newSocket.on("messageSent", (msg) => {
         setMessages((prev) => [...prev, msg]);
+      });
+
+      newSocket.on("newNotification", (notif) => {
+        setNotifications((prev) => [notif, ...prev]);
+        setUnreadNotificationCount((prev) => prev + 1);
       });
 
       setSocket(newSocket);
@@ -73,15 +92,28 @@ export const MessagingProvider = ({ children }) => {
     }
   };
 
+  const markNotificationsAsRead = async () => {
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notifications/${user.uid}/read`, { method: "POST" });
+      setUnreadNotificationCount(0);
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    } catch (error) {
+      console.error("Error marking notifications read:", error);
+    }
+  };
+
   return (
     <MessagingContext.Provider value={{
       socket,
       messages,
       activeChatUser,
       isChatOpen,
+      notifications,
+      unreadNotificationCount,
       openChatWith,
       closeChat,
-      sendMessage
+      sendMessage,
+      markNotificationsAsRead
     }}>
       {children}
     </MessagingContext.Provider>
