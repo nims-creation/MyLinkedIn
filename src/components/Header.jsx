@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { useTheme } from "next-themes";
 import { Button } from "./Button";
 import { Input } from "./Input";
 import { getInitials } from "@/lib/utils";
@@ -21,6 +22,8 @@ import {
   Settings,
   ChevronDown,
   Plus,
+  Moon,
+  Sun,
 } from "lucide-react";
 
 export function Header() {
@@ -35,6 +38,7 @@ export function Header() {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [notificationCount, setNotificationCount] = useState(3);
   const [messageCount, setMessageCount] = useState(2);
+  const { theme, setTheme } = useTheme();
   const dropdownRef = useRef(null);
   const searchRef = useRef(null); // Add search ref
 
@@ -413,6 +417,19 @@ export function Header() {
                   </div>
                 </>
               )}
+
+              {/* Theme Toggle */}
+              <button
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="p-2 rounded-full text-gray-500 hover:bg-gray-100 hover:text-blue-600 transition-colors"
+                aria-label="Toggle theme"
+              >
+                {theme === "dark" ? (
+                  <Sun className="h-5 w-5" />
+                ) : (
+                  <Moon className="h-5 w-5" />
+                )}
+              </button>
 
               {!user && (
                 <div className="flex items-center space-x-3">

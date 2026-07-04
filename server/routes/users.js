@@ -69,6 +69,26 @@ router.get("/debug/all", async (req, res) => {
   }
 });
 
+// Get user network details
+router.get("/:firebaseUid/network", async (req, res) => {
+  try {
+    const user = await User.findOne({ firebaseUid: req.params.firebaseUid });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const [connections, receivedRequests, sentRequests] = await Promise.all([
+      User.find({ firebaseUid: { $in: user.connections } }).select("firebaseUid name headline profilePicture"),
+      User.find({ firebaseUid: { $in: user.receivedRequests } }).select("firebaseUid name headline profilePicture"),
+      User.find({ firebaseUid: { $in: user.sentRequests } }).select("firebaseUid name headline profilePicture")
+    ]);
+
+    res.json({ connections, receivedRequests, sentRequests });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Get user profile
 router.get("/:firebaseUid", async (req, res) => {
   try {
@@ -171,6 +191,124 @@ router.put("/:firebaseUid", async (req, res) => {
     res.json(user);
   } catch (error) {
     res.status(400).json({ message: error.message });
+  }
+});
+
+// Send connection request
+router.post("/:firebaseUid/connect/:targetUid", async (req, res) => {
+  try {
+    const { firebaseUid, targetUid } = req.params;
+    
+    if (firebaseUid === targetUid) {
+      return res.status(400).json({ message: "Cannot connect with yourself" });
+    }
+
+    const [user, targetUser] = await Promise.all([
+      User.findOne({ firebaseUid }),
+      User.findOne({ firebaseUid: targetUid })
+    ]);
+
+    if (!user || !targetUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if already connected or request sent
+    if (user.connections.includes(targetUid)) {
+      return res.status(400).json({ message: "Already connected" });
+    }
+    if (user.sentRequests.includes(targetUid)) {
+      return res.status(400).json({ message: "Request already sent" });
+    }
+
+    user.sentRequests.push(targetUid);
+    targetUser.receivedRequests.push(firebaseUid);
+
+    await Promise.all([user.save(), targetUser.save()]);
+    res.json({ message: "Connection request sent successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Accept connection request
+router.post("/:firebaseUid/accept/:targetUid", async (req, res) => {
+  try {
+    const { firebaseUid, targetUid } = req.params;
+
+    const [user, targetUser] = await Promise.all([
+      User.findOne({ firebaseUid }),
+      User.findOne({ firebaseUid: targetUid })
+    ]);
+
+    if (!user || !targetUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Ensure request exists
+    if (!user.receivedRequests.includes(targetUid)) {
+      return res.status(400).json({ message: "No pending request from this user" });
+    }
+
+    // Remove from requests arrays
+    user.receivedRequests = user.receivedRequests.filter(id => id !== targetUid);
+    targetUser.sentRequests = targetUser.sentRequests.filter(id => id !== firebaseUid);
+
+    // Add to connections
+    if (!user.connections.includes(targetUid)) user.connections.push(targetUid);
+    if (!targetUser.connections.includes(firebaseUid)) targetUser.connections.push(firebaseUid);
+
+    await Promise.all([user.save(), targetUser.save()]);
+    res.json({ message: "Connection request accepted" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Decline connection request
+router.post("/:firebaseUid/decline/:targetUid", async (req, res) => {
+  try {
+    const { firebaseUid, targetUid } = req.params;
+
+    const [user, targetUser] = await Promise.all([
+      User.findOne({ firebaseUid }),
+      User.findOne({ firebaseUid: targetUid })
+    ]);
+
+    if (!user || !targetUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.receivedRequests = user.receivedRequests.filter(id => id !== targetUid);
+    targetUser.sentRequests = targetUser.sentRequests.filter(id => id !== firebaseUid);
+
+    await Promise.all([user.save(), targetUser.save()]);
+    res.json({ message: "Connection request declined" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Remove connection
+router.post("/:firebaseUid/remove/:targetUid", async (req, res) => {
+  try {
+    const { firebaseUid, targetUid } = req.params;
+
+    const [user, targetUser] = await Promise.all([
+      User.findOne({ firebaseUid }),
+      User.findOne({ firebaseUid: targetUid })
+    ]);
+
+    if (!user || !targetUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.connections = user.connections.filter(id => id !== targetUid);
+    targetUser.connections = targetUser.connections.filter(id => id !== firebaseUid);
+
+    await Promise.all([user.save(), targetUser.save()]);
+    res.json({ message: "Connection removed" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 });
 

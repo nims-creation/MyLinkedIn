@@ -32,6 +32,15 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    connections: [{
+      type: String, // Array of firebaseUids
+    }],
+    sentRequests: [{
+      type: String, // Array of firebaseUids
+    }],
+    receivedRequests: [{
+      type: String, // Array of firebaseUids
+    }],
   },
   {
     timestamps: true,

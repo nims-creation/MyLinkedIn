@@ -27,6 +27,7 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState("none");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [editData, setEditData] = useState({
     name: "",
@@ -51,6 +52,22 @@ export default function ProfilePage() {
             profilePicture: userData.profilePicture || "",
           });
         }
+        
+        if (user && user.uid !== params.id) {
+          const networkRes = await fetch(`/api/users/${user.uid}/network`);
+          if (networkRes.ok) {
+            const network = await networkRes.json();
+            if (network.connections.some(c => c.firebaseUid === params.id)) {
+              setConnectionStatus("connected");
+            } else if (network.sentRequests.some(c => c.firebaseUid === params.id)) {
+              setConnectionStatus("pending");
+            } else if (network.receivedRequests.some(c => c.firebaseUid === params.id)) {
+              setConnectionStatus("received");
+            } else {
+              setConnectionStatus("none");
+            }
+          }
+        }
       } catch (error) {
         console.error("Error fetching profile:", error);
       } finally {
@@ -61,7 +78,21 @@ export default function ProfilePage() {
     if (params.id) {
       fetchProfile();
     }
-  }, [params.id]);
+  }, [params.id, user]);
+
+  const handleConnect = async () => {
+    try {
+      await fetch(`/api/users/${user.uid}/connect/${params.id}`, { method: "POST" });
+      setConnectionStatus("pending");
+    } catch (error) { console.error(error); }
+  };
+  
+  const handleAccept = async () => {
+    try {
+      await fetch(`/api/users/${user.uid}/accept/${params.id}`, { method: "POST" });
+      setConnectionStatus("connected");
+    } catch (error) { console.error(error); }
+  };
 
   const handleEdit = () => {
     setEditing(true);
@@ -324,9 +355,26 @@ export default function ProfilePage() {
                       )
                     ) : (
                       <>
-                        <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                          Connect
-                        </Button>
+                        {connectionStatus === "connected" && (
+                          <Button variant="outline" className="border-gray-300">
+                            Connected
+                          </Button>
+                        )}
+                        {connectionStatus === "pending" && (
+                          <Button variant="outline" disabled className="border-gray-300">
+                            Pending
+                          </Button>
+                        )}
+                        {connectionStatus === "received" && (
+                          <Button onClick={handleAccept} className="bg-blue-600 hover:bg-blue-700 text-white">
+                            Accept Request
+                          </Button>
+                        )}
+                        {connectionStatus === "none" && (
+                          <Button onClick={handleConnect} className="bg-blue-600 hover:bg-blue-700 text-white">
+                            Connect
+                          </Button>
+                        )}
                         <Button variant="outline" className="border-gray-300">
                           Message
                         </Button>

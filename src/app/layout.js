@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import { Header } from "@/components/Header";
 import { SmoothScrollProvider } from "@/components/SmoothScrollProvider";
 import { LoadingScreen } from "@/components/LoadingScreen"; // Fixed import
@@ -63,18 +64,25 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}
       >
-        <Suspense fallback={<LoadingScreen />}>
-          <SmoothScrollProvider>
-            <AuthProvider>
-              <Header />
-              <main className="min-h-screen">{children}</main>
-            </AuthProvider>
-          </SmoothScrollProvider>
-        </Suspense>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Suspense fallback={<LoadingScreen />}>
+            <SmoothScrollProvider>
+              <AuthProvider>
+                <Header />
+                <main className="min-h-screen">{children}</main>
+              </AuthProvider>
+            </SmoothScrollProvider>
+          </Suspense>
+        </ThemeProvider>
       </body>
     </html>
   );
