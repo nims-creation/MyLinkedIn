@@ -1,104 +1,117 @@
-# MyLinkedIn - Professional Community Platform
+<div align="center">
+  <img src="./public/next.svg" alt="MyLinkedIn Logo" width="120" />
+  <h1>MyLinkedIn - Professional Community Platform</h1>
+  
+  <p>A modern, full-stack social networking platform built with Next.js, React, Firebase, MongoDB, and Express.js.</p>
 
-A modern, full-stack social networking platform built with Next.js, React, Firebase, MongoDB, and Express.js. This application provides essential LinkedIn-like features including user authentication, profile management, and a social feed for sharing posts.
+  <!-- Badges -->
+  <p>
+    <img src="https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js" alt="Next.js" />
+    <img src="https://img.shields.io/badge/React-19-blue?style=for-the-badge&logo=react" alt="React" />
+    <img src="https://img.shields.io/badge/Express.js-Backend-lightgrey?style=for-the-badge&logo=express" alt="Express" />
+    <img src="https://img.shields.io/badge/MongoDB-Database-green?style=for-the-badge&logo=mongodb" alt="MongoDB" />
+    <img src="https://img.shields.io/badge/Firebase-Auth-yellow?style=for-the-badge&logo=firebase" alt="Firebase" />
+  </p>
 
-## 🌟 Live Demo
+  <h3>
+    <a href="https://mylinkedin-platform.vercel.app/">Live Demo</a>
+    <span> | </span>
+    <a href="#-system-architecture">Architecture</a>
+    <span> | </span>
+    <a href="#-api-reference">API Docs</a>
+  </h3>
+</div>
 
-Experience the platform: [MyLinkedIn-Platform](https://mylinkedin-platform.vercel.app/)
+<hr />
 
-## 📸 Screenshots
+## 🌟 Overview
 
-### Homepage & Landing
-![Homepage](./public/HomePage.png)
-*Beautiful landing page with call-to-action*
+MyLinkedIn provides essential professional networking features including secure user authentication, rich profile management, real-time social feeds, and dynamic post creation with media support. 
 
-### User Authentication
-![Login](./public/SignIn.png)
-*Secure login with Firebase Auth*
+## 🏗 System Architecture
 
-### Main Feed
-![Feed](./public/Feed.png)
-*Dynamic social feed with real-time updates*
+The application follows a decoupled client-server architecture.
 
-### Profile Management
-![Profile](./public/ProfilePage.png)
-*Comprehensive profile management and editing*
+```mermaid
+graph TD
+    %% Client Tier
+    subgraph Frontend [Client Tier - Next.js]
+        UI[React Components]
+        Context[Auth Context]
+        API_Client[API Fetch Layer]
+    end
 
-### User Profile Page 
-![Profile](./public/OtherUserProfilePage.png)
-*Comprehensive profile page of the another user*
+    %% Security & Auth
+    subgraph Auth [Identity Provider]
+        Firebase[Firebase Authentication]
+    end
 
-### Post Creation & Interaction
-![Create Post](./public/PostUpload.png)
-*Rich post creation with media support and detailed post views*
+    %% Server Tier
+    subgraph Backend [Server Tier - Node/Express]
+        Router[Express Router]
+        Controllers[Business Logic]
+        Models[Mongoose Schemas]
+    end
 
+    %% Data Tier
+    subgraph Data [Data Tier]
+        MongoDB[(MongoDB Atlas)]
+        Cloudinary[(Cloudinary Storage)]
+    end
 
-## 🚀 Features
+    %% Relationships
+    UI <--> Context
+    UI <--> API_Client
+    Context <--> |Verify JWT/Session| Firebase
+    
+    API_Client <--> |REST API| Router
+    Router <--> Controllers
+    Controllers <--> Models
+    Models <--> |Read/Write| MongoDB
+    Controllers <--> |Upload Media| Cloudinary
+```
 
-### ✅ User Authentication
-- Firebase Authentication for secure login/registration
-- Email and password authentication
-- Protected routes and user sessions
-- Automatic user profile creation
+## 📸 Platform Interface
 
-### ✅ User Profiles
-- Personalized user profiles with name, email, and bio
-- Profile editing capabilities
-- User avatars with initials fallback
-- Individual user post history
+| Homepage & Landing | Main Feed |
+| :---: | :---: |
+| ![Homepage](./public/HomePage.png) | ![Feed](./public/Feed.png) |
+| *Beautiful landing page with CTA* | *Dynamic social feed with updates* |
 
-### ✅ Social Feed
-- Create and publish text posts
-- Real-time feed updates
-- Post timestamps and author information
-- Clean, LinkedIn-inspired UI
+| User Profile | Post Creation |
+| :---: | :---: |
+| ![Profile](./public/ProfilePage.png) | ![Create Post](./public/PostUpload.png) |
+| *Comprehensive profile management* | *Rich post creation with media* |
 
-### ✅ Responsive Design
-- Modern UI built with Tailwind CSS
-- Shadcn UI components for consistent design
-- Mobile-responsive layout
-- Dark mode support
+## 🚀 Key Features
 
-### ✅ Search Functionality
-- Modern UI built with Tailwind CSS and Lucide icons
-- Mobile Responsive
-- Search Peaple, Post
-- Particular Search page
+* **Authentication & Security:** Secure email/password login powered by Firebase Auth, with protected routes and persistent user sessions.
+* **Professional Profiles:** Highly customizable user profiles with avatars, bios, and historical post tracking.
+* **Social Engagement:** Create, like, and share text and media posts in a real-time responsive feed.
+* **Industry-Grade UI:** A modern, accessible, and fully responsive design built utilizing Tailwind CSS, Shadcn UI, and smooth-scrolling with Lenis.
 
 ## 🛠 Tech Stack
 
-### Frontend
-- **Next.js 15** - React framework with App Router
-- **React 19** - UI library
-- **Tailwind CSS** - Utility-first CSS framework
-- **Shadcn UI** - High-quality UI components
-- **Lucide React** - Beautiful icons
-- **Lenis** - Smooth Scrolling
-- **Swiper** - Smooth swiper for media
-
-### Backend
-- **Express.js** - Node.js web framework
-- **MongoDB** - Document database
-- **Mongoose** - MongoDB object modeling
-
-### Authentication
-- **Firebase Auth** - User authentication and management
+| Domain | Technologies |
+| :--- | :--- |
+| **Frontend** | Next.js 15 (App Router), React 19, Tailwind CSS, Shadcn UI, Framer Motion |
+| **Backend** | Node.js, Express.js |
+| **Database & Storage** | MongoDB, Mongoose, Cloudinary |
+| **Authentication** | Firebase Authentication |
+| **Tooling** | ESLint, PostCSS |
 
 ## 📦 Installation & Setup
 
 ### Prerequisites
-- Node.js (v18 or higher)
-- MongoDB (local installation or MongoDB Atlas)
-- Firebase project setup
+- Node.js (v18+)
+- Local MongoDB or MongoDB Atlas URI
+- Firebase Project Setup
 
-### 1. Clone the Repository
+### 1. Clone & Install
 ```bash
-git clone <repository-url>
-cd mini-linkedin-platform
-```
+git clone https://github.com/nims-creation/MyLinkedIn.git
+cd MyLinkedIn
 
-### 2. Install Dependencies
-```bash
 # Install frontend dependencies
 npm install
 
@@ -106,265 +119,73 @@ npm install
 npm run server:install
 ```
 
-### 3. Environment Configuration
+### 2. Environment Configuration
 
-#### Frontend Environment
-Create a `.env.local` file in the root directory:
+Create a `.env.local` in the **root** directory:
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:5000/api
-NEXT_PUBLIC_FIREBASE_API_KEY=your-firebase-api-key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
-NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
+NEXT_PUBLIC_FIREBASE_API_KEY=your_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_bucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 ```
 
-#### Backend Environment
-Create a `.env` file in the `server` directory:
+Create a `.env` in the **server** directory:
 ```env
-MONGODB_URI=mongodb://localhost:27017/mini-linkedin
+MONGODB_URI=mongodb://localhost:27017/mylinkedin
 PORT=5000
 ```
 
-### 4. Firebase Setup
-1. Create a new Firebase project at [Firebase Console](https://console.firebase.google.com/)
-2. Enable Authentication with Email/Password provider
-3. Get your Firebase configuration from Project Settings
-4. Update the environment variables with your Firebase config
-
-### 5. MongoDB Setup
-- **Local MongoDB**: Install MongoDB locally and ensure it's running on port 27017
-- **MongoDB Atlas**: Create a cluster and update the MONGODB_URI in your environment file
-
-### 6. Start the Application
-
-#### Development Mode
+### 3. Run the Application
 ```bash
-# Terminal 1: Start the backend server
+# Windows users can use the startup script:
+.\start-dev.bat
+
+# Or run manually in two terminals:
+# Terminal 1: Backend
 npm run server
 
-# Terminal 2: Start the frontend development server
+# Terminal 2: Frontend
 npm run dev
 ```
 
-#### Production Mode
-```bash
-# Build the frontend
-npm run build
+## 📖 API Reference
 
-# Start the production server
-npm start
-```
+### User Management
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/users/:uid` | Retrieve a user's profile |
+| `POST` | `/api/users` | Create/Update profile data |
+| `GET` | `/api/users/search` | Search users by name/keyword |
 
-### 7. Access the Application
-- Frontend: [http://localhost:3000](http://localhost:3000)
-- Backend API: [http://localhost:5000](http://localhost:5000)
+### Post Engagement
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/posts` | Fetch paginated feed |
+| `POST` | `/api/posts` | Create a new post |
+| `POST` | `/api/posts/:postId/like` | Toggle like status |
+| `POST` | `/api/posts/:postId/share`| Share post |
 
-## Project Structure
+### Media
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `POST` | `/api/upload` | Upload images/media |
 
-```
-mini-linkedin-platform/
-├── src/                          # Frontend source code
-│   ├── app/                      # Next.js App Router
-│   │   ├── api/                  # API route handlers
-│   │   │   ├── posts/            # Post-related API routes
-│   │   │   │   ├── route.js      # Create/fetch posts
-│   │   │   │   └── [id]/         # Dynamic post routes
-│   │   │   │       ├── route.js  # Get/update/delete specific post
-│   │   │   │       ├── comment/  # Comment management
-│   │   │   │       │   ├── route.js
-│   │   │   │       │   └── [commentId]/
-│   │   │   │       │       └── route.js
-│   │   │   │       ├── like/     # Like functionality
-│   │   │   │       │   └── route.js
-│   │   │   │       └── share/    # Share functionality
-│   │   │   │           └── route.js
-│   │   │   ├── upload/           # File upload API
-│   │   │   │   ├── route.js      # General file upload
-│   │   │   │   ├── profile-picture/
-│   │   │   │   │   └── route.js
-│   │   │   │   └── post-image/
-│   │   │   │       └── route.js
-│   │   │   ├── users/            # User management API
-│   │   │   │   ├── route.js      # Create/list users
-│   │   │   │   └── [id]/         # User profile routes
-│   │   │   │       └── route.js
-│   │   │   |── test-connection/  # API health check
-│   │   │   |   └── route.js
-|   |   |   └── search/
-|   |   |       └──route.js       # APi Search functionality
-│   │   ├── auth/                 # Authentication pages
-│   │   │   ├── login/
-│   │   │   │   └── page.js       # Login page
-│   │   │   └── register/
-│   │   │       └── page.js       # Registration page
-│   │   ├── post/                 # Post detail pages
-│   │   │   └── [id]/
-│   │   │       └── page.js       # Individual post view
-│   │   ├── profile/              # Profile pages
-│   │   │   ├── complete/
-│   │   │   │   └── page.js       # Profile completion
-│   │   │   └── [id]/
-│   │   │       └── page.js       # User profile view
-│   │   ├── favicon.ico           # Favicon
-│   │   ├── globals.css           # Global styles
-│   │   ├── layout.js             # Root layout
-│   │   ├── loading.js            # Loading UI
-│   │   ├── not-found.js          # 404 page
-│   │   └── page.js               # Home page (feed)
-│   ├── components/               # Reusable React components
-│   │   ├── Button.jsx            # Button component
-│   │   ├── Card.jsx              # Card components
-│   │   ├── CreatePost.jsx        # Post creation form
-│   │   ├── Input.jsx             # Input component
-│   │   ├── LoadingComponents.jsx # Loading states
-│   │   ├── MediaCarousel.jsx     # Media swiper component
-│   │   ├── Navbar.jsx            # Navigation bar
-│   │   ├── PostCard.jsx          # Post display card
-│   │   ├── PostFeed.jsx          # Posts feed container
-│   │   ├── Textarea.jsx          # Textarea component
-|   |   └── SearchResults.jsx     # Search Result Shown
-│   ├── context/                  # React Context providers
-│   │   └── AuthContext.js        # Authentication context
-|   ├── hooks                     # Reach Hooks provider
-|   |   └──useDebounce.js         # Prevent Excessive API calls
-│   └── lib/                      # Utility libraries
-│       ├── firebase.js           # Firebase configuration
-│       ├── realtime.js           # Real-time polling utilities
-│       └── utils.js              # General utilities
-├── server/                       # Backend Express.js application
-│   ├── config/                   # Configuration files
-│   │   └── cloudinary.js         # Cloudinary setup
-│   ├── models/                   # MongoDB models
-│   │   ├── Post.js               # Post schema
-│   │   └── User.js               # User schema
-│   ├── routes/                   # Express route handlers
-│   │   ├── posts.js              # Post-related routes
-│   │   ├── upload.js             # File upload routes
-│   │   └── users.js              # User-related routes
-│   ├── index.js                  # Express server entry point
-│   └── package.json              # Backend dependencies
-├── public/                       # Static assets
-│   ├── next.svg                  # Next.js logo
-│   └── vercel.svg                # Vercel logo
-├── .env.local                    # Environment variables (local)
-├── .env.example                  # Environment variables template
-├── .gitignore                    # Git ignore rules
-├── README.md                     # Project documentation
-├── components.json               # Shadcn/ui configuration
-├── jsconfig.json                 # JavaScript configuration
-├── next.config.js                # Next.js configuration
-├── package.json                  # Frontend dependencies
-├── postcss.config.js             # PostCSS configuration
-└── tailwind.config.js            # Tailwind CSS configuration
-```
+## 🛡 Security & Best Practices
 
-## 🔗 API Endpoints
-
-### Users
-- `GET /api/users/:firebaseUid` - Get user profile
-- `POST /api/users` - Create/update user profile
-- `PUT /api/users/:firebaseUid` - Update user profile
-- `POST /api/users/complete-profile` - Complete user profile
-- `GET /api/users/search` - Search Result User
-
-### Posts
-- `GET /api/posts` - Get all posts
-- `GET /api/posts/:postId` - Get specific post
-- `GET /api/posts?userId=:userId` - Get posts by user
-- `POST /api/posts` - Create a new post
-- `PUT /api/posts/:postId` - Update post
-- `DELETE /api/posts/:postId` - Delete post
-- `POST /api/posts/:postId/like` - Like/unlike post
-- `POST /api/posts/:postId/share` - Share post
-
-### Comments
-- `GET /api/posts/:postId/comments` - Get post comments
-- `POST /api/posts/:postId/comments` - Add comment
-- `DELETE /api/comments/:commentId` - Delete comment
-
-### File Upload
-- `POST   /api/upload` - Upload media files
-
-## 🎨 UI Components
-
-### Custom Components
-- **Header** - Navigation with authentication state
-- **PostFeed** - Dynamic feed with infinite scroll potential
-- **PostCard** - Individual post display
-- **CreatePost** - Post creation form
-- **Card, Button, Input, Textarea** - Reusable UI primitives
-
-## 🔐 Authentication Flow
-
-1. **Registration**: Users create accounts with email/password
-2. **Profile Creation**: Automatic profile creation in MongoDB
-3. **Login**: Firebase handles authentication
-4. **Protected Routes**: AuthContext provides user state
-5. **Logout**: Clean session termination
-
-## 🚀 Deployment
-
-### Frontend (Vercel)
-1. Connect your GitHub repository to Vercel
-2. Set environment variables in Vercel dashboard
-3. Deploy automatically on push to main branch
-
-### Backend (Heroku/Railway/DigitalOcean)
-1. Create a new app on your preferred platform
-2. Set environment variables
-3. Deploy the `server` directory
-
-### Database (MongoDB Atlas)
-1. Create a MongoDB Atlas cluster
-2. Update the MONGODB_URI environment variable
-3. Ensure network access is configured
-
-## 🛡 Security Features
-
-- Firebase Authentication for secure user management
-- Environment variables for sensitive configuration
-- CORS protection for API endpoints
-- Input validation and sanitization
-- Protected API routes
-
-## 🔄 Future Enhancements
-
-### Planned Features
-- **User Connections** - Follow/connect with other users
-- **Real-time Notifications** - Live updates for interactions
-- **Advanced Search** - Search users and posts
-- **Professional Features** - Job postings, company pages
-- **Messaging System** - Direct messages between users
-
-### Technical Improvements
-- **Caching** - Redis for improved performance
-- **File Storage** - Cloudinary/S3 for media files
-- **Push Notifications** - PWA capabilities
-- **Testing** - Unit and integration tests
-- **Analytics** - User engagement tracking
+- **Token Validation:** API endpoints require valid Firebase JWTs.
+- **Data Sanitization:** Mongoose schemas enforce strict data typing.
+- **CORS Configuration:** Restricted cross-origin requests on the backend.
+- **Environment Variables:** All secrets are kept out of source control via `.gitignore`.
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/new-feature`)
-3. Commit your changes (`git commit -am 'Add new feature'`)
-4. Push to the branch (`git push origin feature/new-feature`)
-5. Create a Pull Request
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Next.js team for the amazing framework
-- Tailwind CSS for the utility-first CSS framework
-- Shadcn for the beautiful UI components
-- Firebase for authentication services
-- MongoDB for the database solution
-
----
-
-**Happy coding! 🚀**
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
